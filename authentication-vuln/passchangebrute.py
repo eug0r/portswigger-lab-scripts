@@ -28,7 +28,6 @@ def re_login():
 
 
 cwd = Path.cwd() 
-print("Current Directory:", cwd)
 file_path = cwd / "passwords.txt"  # path-to-your-passwords-file
 
 with open(file_path, "r") as f:
