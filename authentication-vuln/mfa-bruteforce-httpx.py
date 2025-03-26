@@ -9,7 +9,7 @@ login = f"{url}/login"
 login2 = f"{url}/login2"
 semaphore = asyncio.Semaphore(24)
 
-# Async CSRF fetch using regex for speed
+# CSRF fetch
 def csrf_fetch(response_text):
     match = re.search(r'name="csrf" value="(.+?)"', response_text)
     return match.group(1) if match else None
